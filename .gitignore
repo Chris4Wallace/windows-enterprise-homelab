@@ -1,0 +1,36 @@
+# Private keys and certificates
+*.pfx
+*.p12
+*.key
+*.pem
+*.ppk
+
+# Credential and secret files
+*password*
+*credential*
+*secret*
+*token*
+*.kdbx
+
+# CA backups and databases
+*.edb
+*.jrs
+*.log
+*.chk
+CA-Backup/
+PrivateKeys/
+
+# Raw exports requiring review
+raw-exports/
+private/
+temp/
+
+# Windows files
+Thumbs.db
+Desktop.ini
+
+# PowerShell transcripts
+*.transcript.txt
+
+# Editor files
+.vscode/
