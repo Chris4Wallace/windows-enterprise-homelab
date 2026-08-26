@@ -2,322 +2,451 @@
 
 ## Overview
 
-FILE01 provides centralized file services for the `homelab.local` Active
-Directory environment.
+FILE01 provides centralized file services for the `homelab.local` Active Directory environment.
 
-The server hosts the `CompanyData` SMB share used by departmental users
-and demonstrates role-based access control using Active Directory security
-groups, SMB share permissions, and NTFS permissions.
+The server hosts the `CompanyData` SMB share used for departmental and shared data. Access is controlled through Active Directory security groups and NTFS permissions, allowing domain identities to receive different levels of access to FILE01 resources.
 
-The implementation was validated from a domain-joined Windows 10 client
-using multiple domain user accounts to confirm both authorized and
-unauthorized access behavior.
+The implementation was validated from a domain-joined Windows 10 workstation using multiple domain user accounts. Testing included both successful access and intentional access-denied scenarios to verify that authorization boundaries were functioning correctly.
 
 ---
 
 ## Server Role
 
-FILE01 provides the following services:
+FILE01 functions as a domain-integrated Windows member server providing:
 
-- Centralized SMB file sharing
-- Departmental data storage
+- SMB file sharing
+- Centralized company data storage
+- Departmental folders
 - NTFS access control
 - Active Directory group-based authorization
 - IIS web services
-- HTTPS using an internally issued certificate
+- HTTPS using a certificate issued by the internal PKI
 
-FILE01 is integrated with the `homelab.local` Active Directory domain and
-uses domain identities and security groups for resource authorization.
+FILE01 integrates with Active Directory, DNS, Windows client systems, and the HomeLab certificate infrastructure.
 
 ---
 
 ## Storage Configuration
 
-A dedicated `F:` volume is used for company file storage.
+Company data is stored on the dedicated `F:` volume rather than the operating system volume.
 
-The primary shared directory is:
+The primary data directory is:
 
-`F:\CompanyData`
+```text
+F:\CompanyData
+```
 
-The `CompanyData` directory contains departmental folders including:
+The directory contains:
 
 - Engineering
 - Finance
 - HR
 - Marketing
 - Public
+- ServerInfo
 
-A `ServerInfo` text file is also stored within the CompanyData directory.
+Using a dedicated data volume separates shared organizational data from the Windows operating system volume.
 
-Using a separate data volume keeps shared organizational data separate
-from the Windows operating system volume.
+![FILE01 CompanyData Folder Structure](../screenshots/file01/FILE01-CompanyData-Folder-Structure.png)
 
 ---
 
 ## SMB Share Configuration
 
-The primary network share is:
+The CompanyData directory is published as an SMB network share.
 
-`\\FILE01\CompanyData`
+**UNC path:**
 
-The underlying directory is:
+```text
+\\FILE01\CompanyData
+```
 
-`F:\CompanyData`
+**Local path:**
 
-The SMB share provides the network entry point to the departmental folder
-structure.
+```text
+F:\CompanyData
+```
 
-Share permissions were configured with:
-
-- `Everyone` — Full Control
-
-Access restrictions are then enforced primarily through NTFS permissions
-on the departmental directories.
-
-This design allows the share to provide access to the namespace while
-NTFS permissions determine which resources each authenticated domain user
-can access.
+The share provides domain users with a centralized namespace through which departmental and public resources can be accessed.
 
 ![FILE01 SMB Share](../screenshots/file01/FILE01-SMB-Share.png)
+
+### Share and NTFS Permission Model
+
+The SMB share layer is configured with broad access while NTFS permissions provide the more granular authorization controls on the underlying file system.
+
+This separates:
+
+```text
+Network Share Access
+        ↓
+NTFS File-System Authorization
+        ↓
+Departmental Resource Access
+```
+
+Effective access therefore depends on both the SMB share configuration and the NTFS permissions applied to the requested resource.
 
 ---
 
 ## Active Directory Group-Based Access Control
 
-Departmental access is assigned through Active Directory security groups
-rather than by granting permissions directly to individual users.
+FILE01 uses Active Directory security groups to manage access rather than assigning permissions directly to individual users.
 
-Examples include:
+Department-related security groups include:
 
 - `Engineering_Users`
 - `Finance_Users`
 - `HR_Users`
 - `Marketing_Users`
 
-Departmental folders are assigned permissions corresponding to their
-respective security groups.
+Administrative identities and groups are also represented in the NTFS access-control configuration.
 
-For example, the Engineering directory grants the
-`HOMELAB\Engineering_Users` group permissions required to work with files
-within that department without granting Full Control.
+This approach allows access to be managed centrally through Active Directory group membership.
 
-This provides centralized role-based access management because access can
-be changed by modifying Active Directory group membership rather than
-reconfiguring individual file permissions.
+Instead of repeatedly changing permissions for individual users, administrators can modify the appropriate group membership and allow the existing ACL structure to determine resource access.
 
 ![FILE01 CompanyData NTFS Permissions](../screenshots/file01/FILE01-CompanyData-NTFS-Permissions.png)
 
 ---
 
-## Departmental Folder Structure
+## Departmental Folder Permissions
 
-The CompanyData share presents a common organizational namespace:
+Departmental folders exist beneath:
 
-`\\FILE01\CompanyData`
+```text
+F:\CompanyData
+```
 
-Users can enumerate the departmental folder structure while access to the
-contents of protected departmental folders is controlled through NTFS
-authorization.
+The structure provides separate locations for organizational resources while NTFS permissions determine which authenticated users can work with the contents of each folder.
 
-This allows users to locate shared resources while preventing unauthorized
-access to departmental data.
+### Engineering Example
 
-![FILE01 CompanyData Folder Structure](../screenshots/file01/FILE01-CompanyData-Folder-Structure.png)
+The Engineering directory demonstrates the use of an Active Directory departmental security group within the NTFS ACL.
+
+![FILE01 Engineering NTFS Permissions](../screenshots/file01/FILE01-Engineering-NTFS-Permissions.png)
+
+Additional NTFS permission evidence was collected for the Finance, HR, Marketing, and Public directories and is retained in the repository's FILE01 screenshot collection.
 
 ---
 
 ## Windows 10 Client Validation
 
-FILE01 access controls were validated from a domain-joined Windows 10
-workstation using multiple Active Directory user accounts.
+FILE01 was tested from a domain-joined Windows 10 workstation to verify the configuration from an end-user perspective.
 
-Testing included:
+Validation included:
 
+- Domain-user authentication
+- DNS/name resolution
 - Network connectivity to FILE01
-- Access to `\\FILE01\CompanyData`
-- Enumeration of the CompanyData folder structure
-- Authorized departmental folder access
-- File creation within authorized folders
-- Access attempts against unauthorized departmental folders
-- Public folder access
+- SMB share connectivity
+- CompanyData enumeration
+- Authorized departmental access
+- Successful file creation
+- Unauthorized departmental access
+- Public-folder access
 
-Both successful and denied access were intentionally tested.
+Testing both successful and unsuccessful authorization scenarios was important because successful access alone would not prove that departmental access boundaries were being enforced.
+
+---
+
+## CompanyData Share Access
+
+The Windows 10 domain client successfully connected to:
+
+```text
+\\FILE01\CompanyData
+```
+
+The client was able to enumerate the CompanyData namespace and view the available departmental and public folders.
+
+This demonstrated the complete path between the client and FILE01:
+
+```text
+Domain User
+    ↓
+DNS / Network Connectivity
+    ↓
+FILE01
+    ↓
+SMB
+    ↓
+CompanyData Share
+```
 
 ---
 
 ## Sarah Johnson Access Validation
 
-Testing performed while authenticated as Sarah Johnson confirmed that the
-Windows 10 client could connect to FILE01 and access the CompanyData share.
+FILE01 authorization was tested while authenticated as the Sarah Johnson domain account.
 
-The client successfully enumerated:
+The tests demonstrated that access differed depending on the requested departmental resource.
 
-- Engineering
-- Finance
-- HR
-- Marketing
-- Public
+### Finance — Authorized
 
-Authorization testing demonstrated different behavior depending on the
-departmental resource.
+Sarah Johnson successfully accessed the Finance directory and created a test file.
 
-### Finance
-
-Sarah Johnson successfully accessed the Finance directory and created a
-test file.
-
-This confirmed effective write access to the authorized departmental
-resource.
+This confirmed effective write access to the authorized Finance resource.
 
 ![Sarah Johnson Finance Write Access](../screenshots/windows10/13-Windows10-SarahJohnson-Finance-Write-Access.png)
 
-### Public
+### Engineering — Access Denied
 
-Sarah Johnson successfully accessed the Public directory and created a
-test file.
+An attempt by Sarah Johnson to access:
 
-This confirmed that the shared Public resource was available as designed.
+```text
+\\FILE01\CompanyData\Engineering
+```
 
-### Engineering
+resulted in an access-denied response.
 
-An attempt to access:
+This demonstrated that being able to connect to the CompanyData share did not automatically provide access to every departmental resource contained within it.
 
-`\\FILE01\CompanyData\Engineering`
-
-returned a Windows access-denied message.
-
-This confirmed that visibility of a folder within the shared namespace
-does not automatically grant access to its contents.
-
-![FILE01 Engineering NTFS Permissions](../screenshots/file01/FILE01-Engineering-NTFS-Permissions.png)
 ![Sarah Johnson Engineering Access Denied](../screenshots/windows10/12-Windows10-SarahJohnson-Engineering-Access-Denied.png)
+
+### Public — Authorized
+
+Sarah Johnson was also able to access the Public directory and create a test file, confirming that the shared Public resource was available as designed.
+
 ---
 
 ## Sarah Davis Access Validation
 
-A second domain user was used to confirm that FILE01 authorization changes
-according to the user's Active Directory group membership.
+A second domain user was used to verify that FILE01 authorization changed according to Active Directory group membership.
 
-### HR
+### HR — Authorized
 
-Sarah Davis successfully accessed the HR directory and created a test
-file.
+Sarah Davis successfully accessed the HR directory and created a test file.
 
-This confirmed effective write access to her authorized departmental
-resource.
+This confirmed effective write access to the authorized HR resource.
 
 ![Sarah Davis HR Write Access](../screenshots/windows10/09-Windows10-SaraDavis-HR-Write-Access.png)
 
-### Public
+### Finance — Access Denied
 
-Sarah Davis successfully accessed the Public directory and created a test
-file.
+An attempt by Sarah Davis to access:
 
-### Finance
+```text
+\\FILE01\CompanyData\Finance
+```
 
-An attempt to access:
+resulted in an access-denied response.
 
-`\\FILE01\CompanyData\Finance`
-
-returned a Windows access-denied message.
-
-This provided negative authorization testing and demonstrated that Sarah
-Davis could not access a departmental resource for which she was not
-authorized.
+This provided negative authorization testing and demonstrated that the account could not access the protected Finance resource.
 
 ![Sarah Davis Finance Access Denied](../screenshots/windows10/08-Windows10-SaraDavis-Finance-Access-Denied.png)
 
+### Public — Authorized
+
+Sarah Davis successfully accessed the Public directory and created a test file.
+
+This provided an additional validation point for the shared Public resource.
+
 ---
 
-## Authorization Validation Summary
+## Authorization Validation
 
-Client testing demonstrated the intended relationship between Active
-Directory identities, security groups, and FILE01 permissions.
+The Windows 10 tests demonstrate the relationship between Active Directory identities, security groups, FILE01 permissions, and resource access.
 
-The authorization path can be summarized as:
+The authorization model can be summarized as:
 
-`Domain User → AD Security Group → NTFS Permissions → FILE01 Resource Access`
+```text
+Active Directory User
+        ↓
+AD Security Group Membership
+        ↓
+FILE01 NTFS Permissions
+        ↓
+Resource Authorization
+        ↓
+Allow / Deny Result
+```
 
-Successful access tests confirmed that authorized users could work with
-their departmental resources.
+The tests demonstrated both sides of the authorization model:
 
-Access-denied tests confirmed that users could not access protected
-departmental resources outside their assigned authorization.
+**Positive testing**
 
-Testing both conditions was important because successful access alone
-would not demonstrate that the access-control boundaries were functioning
-correctly.
+Authorized users successfully accessed and created files within permitted resources.
+
+**Negative testing**
+
+Users attempting to access protected departmental resources for which they lacked authorization received an access-denied response.
+
+This demonstrates that FILE01 is not simply providing universal access to every domain user.
 
 ---
 
 ## IIS and HTTPS
 
-FILE01 also hosts IIS and provides HTTPS connectivity using:
+FILE01 also hosts Internet Information Services (IIS).
 
-`https://file01.homelab.local`
+The internal web service is accessible using the fully qualified domain name:
 
-The HTTPS service uses TCP port 443 and a certificate issued by the
-internal enterprise certification authority.
+```text
+https://file01.homelab.local
+```
 
-The server certificate identifies:
+HTTPS operates over TCP port `443` using a server certificate issued by the HomeLab internal Public Key Infrastructure.
 
-`file01.homelab.local`
+The certificate presented by FILE01 identifies:
+
+```text
+file01.homelab.local
+```
 
 and was issued by:
 
-`HOMELAB-Root-CA`
+```text
+HOMELAB-Root-CA
+```
 
-HTTPS was validated from the Windows 10 domain client by connecting to
-FILE01 through its fully qualified domain name and inspecting the
-certificate presented by the server.
-
-This demonstrates integration between:
-
-`Active Directory DNS → FILE01 → IIS → Enterprise PKI → Windows Client`
+The service was validated from the Windows 10 domain client by connecting to FILE01 over HTTPS and inspecting the certificate presented by the server.
 
 ![Windows 10 FILE01 HTTPS Validation](../screenshots/windows10/05-Windows10-FILE01-HTTPS-Success.png)
+
+Detailed certificate-services configuration is documented separately in the PKI portion of this repository.
+
+---
+
+## Integration with Active Directory
+
+FILE01 relies on the Active Directory environment hosted by DC01 for identity and authorization.
+
+Active Directory provides:
+
+- Domain user identities
+- Security groups
+- Computer identities
+- Authentication
+- Authorization context
+- DNS integration
+
+FILE01 then applies those identities and group memberships to its file-system permissions.
+
+This creates an integrated authorization workflow rather than relying on independent local user accounts.
+
+---
+
+## DNS Integration
+
+FILE01 participates in the internal `homelab.local` DNS namespace.
+
+Domain clients can access the server using:
+
+```text
+FILE01
+```
+
+or its fully qualified domain name:
+
+```text
+file01.homelab.local
+```
+
+DNS-based access is used by both SMB and HTTPS services.
 
 ---
 
 ## Security Design
 
-The FILE01 implementation demonstrates several enterprise file-services
-principles:
+The FILE01 implementation demonstrates several Windows enterprise file-services concepts:
 
-- Centralized network file storage
+- Centralized network storage
 - Dedicated data storage
-- Active Directory-based authentication
+- Active Directory authentication
 - Security-group-based authorization
-- NTFS least-privilege access control
-- Separation of share and NTFS permissions
-- Departmental access boundaries
-- Positive and negative authorization testing
-- DNS-based server access
-- Internal PKI integration
-- HTTPS-protected IIS services
+- NTFS access control
+- Separation of SMB share and NTFS permissions
+- Departmental resource boundaries
+- Positive authorization testing
+- Negative authorization testing
+- Public shared resources
+- DNS-based service access
+- IIS integration
+- Enterprise PKI integration
 
-Access is managed through security groups instead of individual user
-permissions, making the environment easier to administer and scale.
+Using security groups rather than individual user ACL entries provides a more manageable and scalable authorization model.
 
 ---
 
 ## Validation Results
 
-FILE01 was successfully validated as a domain-integrated enterprise file
-server.
+FILE01 was successfully validated as a domain-integrated Windows file server.
 
 Testing confirmed that:
 
+- FILE01 participates in the `homelab.local` domain.
 - Domain clients can resolve and communicate with FILE01.
-- `\\FILE01\CompanyData` is accessible to authorized domain users.
-- Departmental resources are protected using NTFS permissions.
-- Active Directory group membership controls departmental authorization.
-- Authorized users can create files within permitted resources.
-- Unauthorized departmental access is denied.
-- Public resources remain available as designed.
-- IIS is reachable through `https://file01.homelab.local`.
-- FILE01 presents a certificate issued by the internal enterprise CA.
+- `\\FILE01\CompanyData` is available over SMB.
+- The CompanyData directory provides centralized departmental storage.
+- Active Directory security groups participate in NTFS authorization.
+- Authorized users can access and write to permitted departmental resources.
+- Unauthorized departmental access can be denied.
+- Public resources are accessible to the tested users as designed.
+- FILE01 hosts IIS.
+- HTTPS is available through `file01.homelab.local`.
+- FILE01 presents a server certificate issued by `HOMELAB-Root-CA`.
 
-These results demonstrate functional integration between Active Directory,
-DNS, SMB, NTFS authorization, IIS, enterprise PKI, and the Windows 10
-client environment.
+Together, these results demonstrate integration between:
+
+```text
+Active Directory
+      ↓
+DNS
+      ↓
+FILE01
+      ↓
+SMB + NTFS
+      ↓
+Windows 10 Client Authorization
+```
+
+and:
+
+```text
+Active Directory
+      ↓
+Enterprise PKI
+      ↓
+FILE01 / IIS
+      ↓
+HTTPS
+      ↓
+Windows 10 Client Validation
+```
+
+---
+
+## Skills Demonstrated
+
+This portion of the HomeLab project demonstrates hands-on experience with:
+
+- Windows Server administration
+- Windows file services
+- SMB share administration
+- NTFS permissions
+- Active Directory security groups
+- Group-based resource authorization
+- Windows ACL concepts
+- Departmental file-server design
+- Domain client testing
+- Positive and negative access testing
+- DNS integration
+- IIS administration
+- HTTPS configuration
+- Enterprise PKI integration
+- PowerShell administration
+- Infrastructure validation
+- Technical troubleshooting
+- Technical documentation
+
+---
+
+## Related Project Sections
+
+Additional components are documented elsewhere in this repository:
+
+- **DC01 Active Directory** — Domain services, identities, Organizational Units, DNS, and computer objects
+- **PKI01 Certificate Services** — Active Directory Certificate Services and certificate issuance
+- **IIS / HTTPS** — FILE01 TLS configuration and certificate binding
+- **Group Policy** — Centralized domain configuration and certificate auto-enrollment
