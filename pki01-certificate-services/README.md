@@ -1,57 +1,59 @@
-# PKI01 - Active Directory Certificate Services
+# PKI01 — Active Directory Certificate Services
 
 ## Overview
 
-PKI01 provides enterprise certificate services for the HomeLab Windows domain using Microsoft Active Directory Certificate Services (AD CS).
+PKI01 provides certificate services for the `homelab.local` Windows enterprise environment using Microsoft Active Directory Certificate Services (AD CS).
 
-The certificate infrastructure is used to issue and manage certificates for domain systems and services. As part of this implementation, a custom web server certificate template was configured and used to secure IIS on FILE01 with HTTPS.
+The server functions as the internal Enterprise Root Certification Authority and issues certificates used by domain systems and services.
+
+This portion of the project demonstrates:
+
+- Active Directory Certificate Services
+- Enterprise Root CA deployment
+- Certificate templates
+- Certificate enrollment
+- Certificate issuance
+- Certificate trust
+- Certificate chain validation
+- Certificate revocation validation
+- IIS HTTPS integration
+
+---
 
 ## Environment
 
-- Domain: `homelab.local`
-- Certification Authority: `HOMELAB-Root-CA`
-- Certificate Server: `PKI01`
-- Web Server: `FILE01`
-- Client Validation: `Windows10`
-- Certificate Template: `Homelab Web Server`
+| Component | Configuration |
+|---|---|
+| Certificate Server | `PKI01` |
+| Domain | `homelab.local` |
+| Certification Authority | `HOMELAB-Root-CA` |
+| CA Type | Enterprise Root CA |
+| Web Server | `FILE01` |
+| Client Validation | Windows 10 |
+| Web Certificate FQDN | `file01.homelab.local` |
 
-## Implementation
+PKI01 is joined to the Active Directory domain and uses the internal domain DNS infrastructure.
 
-### 1. Custom Web Server Certificate Template
+---
 
-A custom certificate template named `Homelab Web Server` was configured for server authentication.
+## Active Directory Certificate Services
 
-![Homelab Web Server certificate template](../screenshots/PKI01/01-Homelab-Web-Server-Template.png)
+The Active Directory Certificate Services role and Certification Authority role service were installed on PKI01.
 
-### 2. Certificate Template Publication
+The AD CS service was verified as:
 
-The `Homelab Web Server` template was published through the `HOMELAB-Root-CA`, making it available for certificate enrollment.
+- Service: `CertSvc`
+- Display Name: Active Directory Certificate Services
+- Status: Running
+- Startup Type: Automatic
 
-![Published certificate template](../screenshots/PKI01/02-Homelab-Web-Server-Template-Published.png)
+This confirms that certificate services are actively running rather than merely installed.
 
-### 3. FILE01 Certificate Enrollment
+---
 
-FILE01 was issued a server certificate by the internal certification authority.
+## Enterprise Root Certification Authority
 
-The certificate uses:
+PKI01 hosts the internal:
 
-- Subject: `CN=file01.homelab.local`
-- Issuer: `HOMELAB-Root-CA`
-- Private key: Present
-- Intended use: Server Authentication
-
-![FILE01 server certificate](../screenshots/FILE01/03-FILE01-Web-Server-Certificate-Installed.png)
-
-## Troubleshooting
-
-During certificate enrollment, an initial request failed because conflicting certificate template information was supplied. The request referenced both the default `WebServer` template and the custom `HomelabWebServer` template.
-
-The certificate request configuration was corrected so that enrollment used the intended custom template. After correcting the request, the CA issued the certificate successfully and the certificate was installed on FILE01.
-
-This troubleshooting demonstrated the relationship between certificate request configuration, certificate templates, CA policy, and certificate enrollment.
-
-## Result
-
-The custom certificate template was successfully published, FILE01 successfully enrolled for a server certificate, and the certificate was subsequently used to secure the IIS web service with HTTPS.
-
-The HTTPS implementation and client-side validation are documented separately in the `iis-https` section of this repository.
+```text
+HOMELAB-Root-CA
