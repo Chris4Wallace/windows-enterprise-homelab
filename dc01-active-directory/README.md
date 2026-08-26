@@ -47,7 +47,7 @@ Active Directory provides the identity foundation used by the other Windows infr
 
 ## Domain and FSMO Role Validation
 
-The Active Directory domain configuration and domain-level FSMO role ownership were verified using PowerShell.
+The Active Directory domain configuration and domain-level FSMO role ownership were verified directly from DC01 using the Active Directory PowerShell module.
 
 ```powershell
 Get-ADDomain | Format-List DNSRoot,NetBIOSName,DomainMode,PDCEmulator,RIDMaster,InfrastructureMaster
@@ -62,11 +62,15 @@ The results confirmed:
 - RID Master: `DC01.homelab.local`
 - Infrastructure Master: `DC01.homelab.local`
 
-![DC01 Domain Configuration](../screenshots/DC01-Domain-Configuration.png)
+![DC01 Domain Configuration](../screenshots/DC01/DC01-Domain-Configuration.png)
 
 ---
 
 ## Organizational Unit Design
+
+The Organizational Unit hierarchy was also reviewed in Active Directory Users and Computers to verify the administrative structure visually.
+
+![Active Directory OU Structure](../screenshots/DC01/ActiveDirectory-OU-Structure.png)
 
 Organizational Units are used to logically organize Active Directory objects and provide a structure for administration and Group Policy targeting.
 
@@ -97,7 +101,7 @@ The environment contains OUs for infrastructure and departmental resources, incl
 
 This structure separates users, computers, servers, groups, service accounts, and departmental resources instead of placing all domain objects into the default Active Directory containers.
 
-![DC01 Organizational Units](../screenshots/DC01-Organizational-Units.png)
+![DC01 Organizational Units](../screenshots/DC01/DC01-Organizational-Units.png)
 
 ---
 
@@ -111,7 +115,7 @@ Select-Object Name,OperatingSystem,DistinguishedName |
 Format-Table -AutoSize
 ```
 
-The results demonstrate centralized management of Windows Server and Windows client computer objects within `homelab.local`.
+The results confirm that Windows Server and Windows client computer objects are registered and centrally managed within Active Directory for the `homelab.local` domain.
 
 The domain includes infrastructure systems such as:
 
@@ -138,7 +142,7 @@ Select-Object Name,SamAccountName,Department |
 Format-Table -AutoSize
 ```
 
-The results demonstrate centralized identity administration using individual domain accounts and unique `SamAccountName` values.
+The results confirm that enabled domain user accounts are centrally managed in Active Directory with individual identities, unique `SamAccountName` values, and departmental assignments.
 
 These identities are later used throughout the lab for authentication and resource-access testing.
 
@@ -157,6 +161,19 @@ The group-based authorization model is used elsewhere in the lab for departmenta
 This demonstrates the relationship between:
 
 `User Account → Security Group → Resource Permission`
+
+Departmental security group membership was verified with PowerShell to confirm that user accounts were assigned to the appropriate authorization groups.
+
+```powershell
+Get-ADGroupMember "Engineering_Users" | Select-Object Name,SamAccountName
+Get-ADGroupMember "Finance_Users" | Select-Object Name,SamAccountName
+Get-ADGroupMember "HR_Users" | Select-Object Name,SamAccountName
+Get-ADGroupMember "Marketing_Users" | Select-Object Name,SamAccountName
+```
+
+These groups provide the Active Directory authorization layer later used by FILE01 to control access to departmental resources.
+
+![DC01 Department Group Membership](../screenshots/DC01/DC01-AD-Department-Group-Membership.png)
 
 ---
 
@@ -185,6 +202,10 @@ DNS integration allows systems to communicate using names such as:
 `pki01.homelab.local`
 
 rather than relying exclusively on IP addresses.
+
+The Active Directory-integrated forward lookup zone was reviewed to verify DNS records supporting internal name resolution for the `homelab.local` environment.
+
+![DNS Forward Lookup Zone](../screenshots/DC01/DNS-Forward-Lookup-Zone.png)
 
 ---
 
