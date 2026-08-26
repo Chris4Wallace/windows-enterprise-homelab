@@ -78,7 +78,7 @@ This design allows the share to provide access to the namespace while
 NTFS permissions determine which resources each authenticated domain user
 can access.
 
-![FILE01 SMB Share](../screenshots/FILE01-SMB-Share.png)
+![FILE01 SMB Share](../screenshots/FILE01/FILE01-SMB-Share.png)
 
 ---
 
@@ -169,7 +169,7 @@ test file.
 This confirmed effective write access to the authorized departmental
 resource.
 
-![Sarah Johnson Finance Write Access](../screenshots/windows10/13-Windows10-SarahJohnson-Finance-Write-Access.png)
+![Sarah Johnson Finance Write Access](../screenshots/Windows10/13-Windows10-SarahJohnson-Finance-Write-Access.png)
 
 ### Public
 
