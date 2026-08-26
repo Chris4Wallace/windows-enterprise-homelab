@@ -78,6 +78,8 @@ This design allows the share to provide access to the namespace while
 NTFS permissions determine which resources each authenticated domain user
 can access.
 
+![FILE01 SMB Share](../screenshots/file01/FILE01-SMB-Share.png)
+
 ---
 
 ## Active Directory Group-Based Access Control
@@ -103,6 +105,8 @@ This provides centralized role-based access management because access can
 be changed by modifying Active Directory group membership rather than
 reconfiguring individual file permissions.
 
+![FILE01 CompanyData NTFS Permissions](../screenshots/file01/FILE01-CompanyData-NTFS-Permissions.png)
+
 ---
 
 ## Departmental Folder Structure
@@ -117,6 +121,8 @@ authorization.
 
 This allows users to locate shared resources while preventing unauthorized
 access to departmental data.
+
+![FILE01 CompanyData Folder Structure](../screenshots/file01/FILE01-CompanyData-Folder-Structure.png)
 
 ---
 
@@ -163,6 +169,8 @@ test file.
 This confirmed effective write access to the authorized departmental
 resource.
 
+![Sarah Johnson Finance Write Access](../screenshots/windows10/13-Windows10-SarahJohnson-Finance-Write-Access.png)
+
 ### Public
 
 Sarah Johnson successfully accessed the Public directory and created a
@@ -181,6 +189,8 @@ returned a Windows access-denied message.
 This confirmed that visibility of a folder within the shared namespace
 does not automatically grant access to its contents.
 
+![FILE01 Engineering NTFS Permissions](../screenshots/file01/FILE01-Engineering-NTFS-Permissions.png)
+![Sarah Johnson Engineering Access Denied](../screenshots/windows10/12-Windows10-SarahJohnson-Engineering-Access-Denied.png)
 ---
 
 ## Sarah Davis Access Validation
@@ -195,6 +205,8 @@ file.
 
 This confirmed effective write access to her authorized departmental
 resource.
+
+![Sarah Davis HR Write Access](../screenshots/windows10/09-Windows10-SaraDavis-HR-Write-Access.png)
 
 ### Public
 
@@ -212,6 +224,8 @@ returned a Windows access-denied message.
 This provided negative authorization testing and demonstrated that Sarah
 Davis could not access a departmental resource for which she was not
 authorized.
+
+![Sarah Davis Finance Access Denied](../screenshots/windows10/08-Windows10-SaraDavis-Finance-Access-Denied.png)
 
 ---
 
@@ -260,6 +274,8 @@ certificate presented by the server.
 This demonstrates integration between:
 
 `Active Directory DNS → FILE01 → IIS → Enterprise PKI → Windows Client`
+
+![Windows 10 FILE01 HTTPS Validation](../screenshots/windows10/05-Windows10-FILE01-HTTPS-Success.png)
 
 ---
 
