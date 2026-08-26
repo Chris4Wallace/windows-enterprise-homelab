@@ -206,17 +206,17 @@ Sarah Johnson was also able to access the Public directory and create a test fil
 
 ---
 
-## Sarah Davis Access Validation
+## Sara Davis Access Validation
 
 A second domain user was used to verify that FILE01 authorization changes according to Active Directory group membership.
 
 ### HR — Authorized
 
-Sarah Davis successfully accessed the HR directory and created a test file.
+Sara Davis successfully accessed the HR directory and created a test file.
 
 This confirmed effective write access to the authorized HR resource.
 
-![Sarah Davis HR Write Access](../screenshots/Windows10/09-Windows10-SaraDavis-HR-Write-Access.png)
+![Sara Davis HR Write Access](../screenshots/Windows10/09-Windows10-SaraDavis-HR-Write-Access.png)
 
 ### Finance — Access Denied
 
@@ -230,11 +230,11 @@ resulted in an access-denied response.
 
 This provided negative authorization testing and demonstrated that the account could not access the protected Finance resource.
 
-![Sarah Davis Finance Access Denied](../screenshots/Windows10/08-Windows10-SaraDavis-Finance-Access-Denied.png)
+![Sara Davis Finance Access Denied](../screenshots/Windows10/08-Windows10-SaraDavis-Finance-Access-Denied.png)
 
 ### Public — Authorized
 
-Sarah Davis successfully accessed the Public directory and created a test file, providing an additional validation point for the shared Public resource.
+Sara Davis successfully accessed the Public directory and created a test file, providing an additional validation point for the shared Public resource.
 
 ---
 
