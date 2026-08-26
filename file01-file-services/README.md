@@ -105,9 +105,7 @@ This provides centralized role-based access management because access can
 be changed by modifying Active Directory group membership rather than
 reconfiguring individual file permissions.
 
-![FILE01 CompanyData NTFS Permissions](../screenshots/FILE01-CompanyData-NTFS-Permissions.png)
-
----
+![FILE01 CompanyData NTFS Permissions](../screenshots/FILE01/FILE01-CompanyData-NTFS-Permissions.png)
 
 ## Departmental Folder Structure
 
