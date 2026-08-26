@@ -47,7 +47,6 @@ The directory contains departmental and shared resources including:
 Using a dedicated data volume separates shared organizational data from the Windows operating system volume.
 
 ![FILE01 CompanyData Folder Structure](../screenshots/FILE01/FILE01-CompanyData-Folder-Structure.png)
-
 ---
 
 ## SMB Share Configuration
