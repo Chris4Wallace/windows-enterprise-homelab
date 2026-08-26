@@ -216,7 +216,7 @@ Sarah Davis successfully accessed the HR directory and created a test file.
 
 This confirmed effective write access to the authorized HR resource.
 
-![Sarah Davis HR Write Access](../screenshots/Windows10/09-Windows10-SaraDavis-HR-Write-Access.png)
+![Sarah Davis HR Write Access](../screenshots/Windows10/09-Windows10-SarahDavis-HR-Write-Access.png)
 
 ### Finance — Access Denied
 
