@@ -72,8 +72,6 @@ homelab.local
 
 ## Repository Structure
 
-architecture/
-    Network diagrams
 
 dc01-active-directory/
     Active Directory documentation
@@ -87,8 +85,6 @@ pki01-certificate-services/
 iis-https/
     HTTPS deployment
 
-scripts/
-    PowerShell automation
 
 screenshots/
     Evidence from the lab
@@ -122,5 +118,3 @@ lab environment.
 No passwords, private keys, certificate exports, product keys, or
 sensitive information are included.
 
-```text
-homelab.local
