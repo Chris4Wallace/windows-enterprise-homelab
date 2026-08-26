@@ -35,7 +35,7 @@ FILE01 was issued a server authentication certificate from the internal `HOMELAB
 
 The certificate was installed in the Local Computer personal certificate store and included the corresponding private key.
 
-![FILE01 certificate](../screenshots/file01/03-FILE01-Web-Server-Certificate-Installed.png)
+![FILE01 certificate](../screenshots/FILE01/03-FILE01-Web-Server-Certificate-Installed.png)
 
 ## HTTPS Certificate Binding
 

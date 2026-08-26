@@ -62,7 +62,7 @@ The results confirmed:
 - RID Master: `DC01.homelab.local`
 - Infrastructure Master: `DC01.homelab.local`
 
-![DC01 Domain Configuration](../screenshots/dc01/DC01-Domain-Configuration.png)
+![DC01 Domain Configuration](../screenshots/DC01-Domain-Configuration.png)
 
 ---
 
@@ -97,7 +97,7 @@ The environment contains OUs for infrastructure and departmental resources, incl
 
 This structure separates users, computers, servers, groups, service accounts, and departmental resources instead of placing all domain objects into the default Active Directory containers.
 
-![DC01 Organizational Units](../screenshots/dc01/DC01-Organizational-Units.png)
+![DC01 Organizational Units](../screenshots/DC01-Organizational-Units.png)
 
 ---
 
@@ -121,7 +121,7 @@ The domain includes infrastructure systems such as:
 - Windows client systems
 - Departmental computer objects
 
-![DC01 Domain Computers](../screenshots/dc01/DC01-Domain-Computers.png)
+![DC01 Domain Computers](../screenshots/DC01-Domain-Computers.png)
 
 ---
 
@@ -142,7 +142,7 @@ The results demonstrate centralized identity administration using individual dom
 
 These identities are later used throughout the lab for authentication and resource-access testing.
 
-![DC01 Active Directory Users](../screenshots/dc01/DC01-Active-Directory-Users.png)
+![DC01 Active Directory Users](../screenshots/DC01-Active-Directory-Users.png)
 
 ---
 

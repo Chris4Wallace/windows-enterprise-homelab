@@ -21,13 +21,13 @@ The certificate infrastructure is used to issue and manage certificates for doma
 
 A custom certificate template named `Homelab Web Server` was configured for server authentication.
 
-![Homelab Web Server certificate template](../screenshots/pki01/01-Homelab-Web-Server-Template.png)
+![Homelab Web Server certificate template](../screenshots/PKI01/01-Homelab-Web-Server-Template.png)
 
 ### 2. Certificate Template Publication
 
 The `Homelab Web Server` template was published through the `HOMELAB-Root-CA`, making it available for certificate enrollment.
 
-![Published certificate template](../screenshots/pki01/02-Homelab-Web-Server-Template-Published.png)
+![Published certificate template](../screenshots/PKI01/02-Homelab-Web-Server-Template-Published.png)
 
 ### 3. FILE01 Certificate Enrollment
 
@@ -40,7 +40,7 @@ The certificate uses:
 - Private key: Present
 - Intended use: Server Authentication
 
-![FILE01 server certificate](../screenshots/file01/03-FILE01-Web-Server-Certificate-Installed.png)
+![FILE01 server certificate](../screenshots/FILE01/03-FILE01-Web-Server-Certificate-Installed.png)
 
 ## Troubleshooting
 
