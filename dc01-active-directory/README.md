@@ -125,7 +125,7 @@ The domain includes infrastructure systems such as:
 - Windows client systems
 - Departmental computer objects
 
-![DC01 Domain Computers](../screenshots/DC01-Domain-Computers.png)
+![DC01 Domain Computers](../screenshots/DC01/DC01-Domain-Computers.png)
 
 ---
 
@@ -146,7 +146,7 @@ The results confirm that enabled domain user accounts are centrally managed in A
 
 These identities are later used throughout the lab for authentication and resource-access testing.
 
-![DC01 Active Directory Users](../screenshots/DC01-Active-Directory-Users.png)
+![DC01 Active Directory Users](../screenshots/DC01/DC01-Active-Directory-Users.png)
 
 ---
 
